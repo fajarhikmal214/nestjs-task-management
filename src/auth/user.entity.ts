@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { Task } from 'src/tasks/task.entity';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -10,4 +18,11 @@ export class User {
 
   @Column({ type: 'varchar', length: 255 })
   password: string;
+
+  @BeforeInsert() async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  @OneToMany((_type) => Task, (task) => task.user, { eager: true })
+  tasks: Task[];
 }
