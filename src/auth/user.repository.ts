@@ -8,7 +8,7 @@ import { User } from './user.entity';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async createUser(authCredentialsDto: AuthCredentialsDto): Promise<void> {
+  async createUser(authCredentialsDto: AuthCredentialsDto): Promise<User> {
     const { username, password } = authCredentialsDto;
 
     const user = this.create({
@@ -18,6 +18,7 @@ export class UserRepository extends Repository<User> {
 
     try {
       await this.save(user);
+      return user;
     } catch (error) {
       // Duplicate Username
       if (error.code === '23505') {
