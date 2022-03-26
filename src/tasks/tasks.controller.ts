@@ -98,7 +98,7 @@ export class TasksController {
 
   @Delete('/:id')
   @UseGuards(AuthGuard())
-  deleteTask(@Param('id') id: string, @GetUser() user: User): Promise<void> {
+  deleteTask(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
     this.logger.verbose(`User "${user.username}" deleting task "${id}".`);
     return this.tasksService.deleteTaskById(id, user);
   }
