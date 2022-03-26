@@ -1,11 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UseInterceptors } from '@nestjs/common';
+import { SentryInterceptor } from '../sentry.interceptor';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
 
+@UseInterceptors(SentryInterceptor)
 @Injectable()
 export class AuthService {
   constructor(
