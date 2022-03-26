@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Task } from '../tasks/task.entity';
+import { Task } from '../models/tasks/task.entity';
 import {
   BeforeInsert,
   Column,

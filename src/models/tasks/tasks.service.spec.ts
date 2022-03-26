@@ -175,12 +175,13 @@ describe('TaskService', () => {
 
   describe('deleteTaskById', () => {
     it('should delete a task', async () => {
+      await taskRepository.findOne.mockResolvedValue(mockTask);
       await taskRepository.delete.mockResolvedValue({
         affected: 1,
       });
 
       const result = await tasksService.deleteTaskById('someId', mockUser);
-      expect(result).toBeUndefined();
+      expect(result).toEqual(mockTask);
     });
 
     it('should throw an error if task is not found', async () => {
