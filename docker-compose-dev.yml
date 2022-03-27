@@ -1,8 +1,8 @@
-version: '3.7'
+version: '3'
 services:
   task-management-postgres:
     image: postgres:14
-    container_name: "${APP_NAME}_POSTGRES"
+    container_name: '${APP_NAME}_POSTGRES'
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -11,17 +11,25 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
-      - task-management-service
-  
+      - task-management-network
+
+  task-management-adminer:
+    image: adminer
+    container_name: '${APP_NAME}_ADMINER'
+    ports:
+      - '3001:8080'
+    networks:
+      - task-management-network
+
   task-management-app:
     build:
       context: .
-      dockerfile: docker/Dockerfile
-    container_name: "${APP_NAME}_APP"
-    image: app-task-management
+      dockerfile: docker/Dockerfile.dev
+    container_name: '${APP_NAME}_APP'
+    image: app-task-management-dev
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - .:/app
+      - /app/node_modules
     env_file:
       - .env
     environment:
@@ -31,8 +39,10 @@ services:
     depends_on:
       - task-management-postgres
     networks:
-      - task-management-service
+      - task-management-network
+
 networks:
-  task-management-service:
+  task-management-network:
+
 volumes:
   pg_data:
