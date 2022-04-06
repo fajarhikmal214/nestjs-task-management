@@ -28,6 +28,20 @@ export class Task {
   })
   status: TaskStatus;
 
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  filePath: string;
+
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  fileUrl: string;
+
   @ManyToOne(() => User, (user) => user.tasks, { eager: false })
   @Exclude({ toPlainOnly: true })
   user: User;

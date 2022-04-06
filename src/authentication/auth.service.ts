@@ -4,7 +4,7 @@ import { UseInterceptors } from '@nestjs/common';
 import { SentryInterceptor } from '../sentry.interceptor';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { UserRepository } from './user.repository';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload.interface';
 import { User } from './user.entity';
@@ -30,7 +30,9 @@ export class AuthService {
 
     if (user && (await bcrypt.compare(password, user.password))) {
       const payload: JwtPayload = { username };
-      const accessToken: string = this.jwtService.sign(payload);
+      const accessToken: string = this.jwtService.sign(payload, {
+        expiresIn: '1d',
+      });
 
       return { accessToken };
     } else {

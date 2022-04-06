@@ -8,9 +8,12 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { GetUser } from '../../authentication/get-user.decorator';
 import { User } from '../../authentication/user.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -101,5 +104,31 @@ export class TasksController {
   deleteTask(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
     this.logger.verbose(`User "${user.username}" deleting task "${id}".`);
     return this.tasksService.deleteTaskById(id, user);
+  }
+
+  @Patch('/:id/upload-evidence')
+  @UseGuards(AuthGuard())
+  @UseInterceptors(
+    FileInterceptor('file', {
+      limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+      fileFilter: (req, file, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+          return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async uploadEvidence(
+    @GetUser() user: User,
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<Task> {
+    return this.tasksService.addEvidence(
+      user,
+      id,
+      file.buffer,
+      file.originalname,
+    );
   }
 }
